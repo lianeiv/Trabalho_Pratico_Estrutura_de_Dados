@@ -13,7 +13,6 @@ void pausarSistema() {
     getchar();
 }
 
-//funcoes do gerenciamento de produtos
 void cadastrarProduto(Produto** listaProdutos) {
     Produto* novoProduto = (Produto*) malloc(sizeof(Produto));
     if (novoProduto == NULL) {
@@ -50,26 +49,86 @@ void cadastrarProduto(Produto** listaProdutos) {
     printf("\nProduto '%s' cadastrado com sucesso!\n", novoProduto->nome);
 }
 
-//funcoes do gerenciamento de clientes
 void removerCliente(Cliente** listaClientes, const char* cpf) {
     Cliente* anterior = NULL;
     Cliente* atual = *listaClientes;
+
     while (atual != NULL && strcmp(atual->cpf, cpf) != 0) {
         anterior = atual;
         atual = atual->proximo;
     }
 
     if (atual == NULL) {
-        printf("Erro: Cliente nao encontrado.\n", cpf);
+        printf("Erro: Cliente nao encontrado.\n");
         return;
     }
+
     if (anterior == NULL) {
         *listaClientes = atual->proximo;
-    }
-    else {
+    } else {
         anterior->proximo = atual->proximo;
     }
 
     printf("\nCliente '%s' (CPF: %s) foi removido com sucesso.\n", atual->nome, atual->cpf);
     free(atual);
+}
+
+void adicionarProdutoAoCarrinho(Cliente* listaClientes, Produto* listaProdutos) {
+    char cpf[15];
+    int codigoProduto, quantidadeDesejada;
+
+    printf("\n--- Adicionar Produto ao Carrinho ---\n");
+    printf("Digite o CPF do cliente: ");
+    scanf("%14s", cpf);
+    limparBuffer();
+
+    Cliente* cliente = buscarClientePorCPF(listaClientes, cpf);
+    if (cliente == NULL) {
+        printf("Erro: Cliente nao encontrado.\n");
+        return;
+    }
+
+    printf("Digite o codigo do produto: ");
+    scanf("%d", &codigoProduto);
+    limparBuffer();
+
+    Produto* produto = buscarProdutoPorCodigo(listaProdutos, codigoProduto);
+    if (produto == NULL) {
+        printf("Erro: Produto nao encontrado.\n");
+        return;
+    }
+
+    printf("Produto encontrado: %s | Preco: R$%.2f | Estoque: %d\n",
+           produto->nome, produto->preco, produto->quantidade);
+
+    if (produto->quantidade == 0) {
+        printf("Produto fora de estoque.\n");
+        return;
+    }
+
+    printf("Digite a quantidade desejada: ");
+    scanf("%d", &quantidadeDesejada);
+    limparBuffer();
+
+    if (quantidadeDesejada <= 0 || quantidadeDesejada > produto->quantidade) {
+        printf("Erro: Quantidade invalida ou insuficiente em estoque.\n");
+        return;
+    }
+
+    ItemCarrinho* novoItem = (ItemCarrinho*) malloc(sizeof(ItemCarrinho));
+    if (novoItem == NULL) {
+        printf("Erro de alocacao de memoria para o item do carrinho!\n");
+        return;
+    }
+
+    novoItem->produto = produto;
+    novoItem->quantidade = quantidadeDesejada;
+
+    novoItem->proximo = cliente->carrinho;
+    cliente->carrinho = novoItem;
+
+    produto->quantidade -= quantidadeDesejada;
+
+    printf("\n%d unidade(s) de '%s' adicionada(s) ao carrinho de %s.\n",
+           quantidadeDesejada, produto->nome, cliente->nome);
 }
