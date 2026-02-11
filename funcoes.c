@@ -49,3 +49,27 @@ void cadastrarProduto(Produto** listaProdutos) {
 
     printf("\nProduto '%s' cadastrado com sucesso!\n", novoProduto->nome);
 }
+
+//funcoes do gerenciamento de clientes
+void removerCliente(Cliente** listaClientes, const char* cpf) {
+    Cliente* anterior = NULL;
+    Cliente* atual = *listaClientes;
+    while (atual != NULL && strcmp(atual->cpf, cpf) != 0) {
+        anterior = atual;
+        atual = atual->proximo;
+    }
+
+    if (atual == NULL) {
+        printf("Erro: Cliente nao encontrado.\n", cpf);
+        return;
+    }
+    if (anterior == NULL) {
+        *listaClientes = atual->proximo;
+    }
+    else {
+        anterior->proximo = atual->proximo;
+    }
+
+    printf("\nCliente '%s' (CPF: %s) foi removido com sucesso.\n", atual->nome, atual->cpf);
+    free(atual);
+}
