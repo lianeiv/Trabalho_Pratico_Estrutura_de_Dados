@@ -11,7 +11,7 @@ typedef struct {
 //struct para adicionar produto ao carrinho
 //obs: o carrinho precisa se ligar a um cliete
 typedef struct ItemCarrinho {
-    struct Produto* produto;//encontrar o produto na lista principal de produtos
+    Produto* produto;//encontrar o produto na lista principal de produtos
     int QuantidadeDesejada;
     struct ItemCarrinho* proximo;//liga ao próximo produto dentro do carrinho
 } ItemCarrinho;
@@ -37,7 +37,7 @@ typedef struct Produtos {
     int quantidade;
 
     //seguindo para o proximo produto da lista
-    struct Produto* proximo; 
+    Produto* proximo; 
 } Produto;
 
 #endif
